@@ -44,12 +44,27 @@ const PERIODS = [
   { label: 'Evening', from: 17, to: 24 },
 ] as const
 
-export function groupSlotsByPeriod<T extends SlotLike>(slots: T[]): { label: string; slots: T[] }[] {
+export function groupByPeriod<T>(items: T[], getStartTime: (item: T) => string): { label: string; items: T[] }[] {
   return PERIODS.map((period) => ({
     label: period.label,
-    slots: slots.filter((slot) => {
-      const hour = Number(slot.start_time.split(':')[0])
+    items: items.filter((item) => {
+      const hour = Number(getStartTime(item).split(':')[0])
       return hour >= period.from && hour < period.to
     }),
-  })).filter((group) => group.slots.length > 0)
+  })).filter((group) => group.items.length > 0)
+}
+
+export function groupSlotsByPeriod<T extends SlotLike>(slots: T[]): { label: string; slots: T[] }[] {
+  return groupByPeriod(slots, (slot) => slot.start_time).map((group) => ({ label: group.label, slots: group.items }))
+}
+
+/** "HH:mm" options spanning the full day at a fixed interval, e.g. every 15 minutes. */
+export function generateTimeOptions(stepMinutes = 15): string[] {
+  const options: string[] = []
+  for (let minutes = 0; minutes < 24 * 60; minutes += stepMinutes) {
+    const hour = Math.floor(minutes / 60).toString().padStart(2, '0')
+    const minute = (minutes % 60).toString().padStart(2, '0')
+    options.push(`${hour}:${minute}`)
+  }
+  return options
 }

@@ -12,6 +12,7 @@ import { EmptyState } from '../../components/ui/EmptyState'
 import { InlineLoader } from '../../components/ui/PageLoader'
 import { Modal } from '../../components/ui/Modal'
 import { TextField } from '../../components/ui/TextField'
+import { TimePicker } from '../../components/ui/TimePicker'
 import { cn } from '../../lib/cn'
 import { toDateInputValue, WEEKDAYS_SHORT } from '../../lib/format'
 import type { Appointment, Doctor } from '../../types'
@@ -112,22 +113,14 @@ function AddBreakModal({
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField label="Date" type="date" required value={date} onChange={(event) => setDate(event.target.value)} />
         <div className="flex gap-3">
-          <TextField
-            label="Start"
-            type="time"
-            required
-            value={startTime}
-            onChange={(event) => setStartTime(event.target.value)}
-            className="flex-1"
-          />
-          <TextField
-            label="End"
-            type="time"
-            required
-            value={endTime}
-            onChange={(event) => setEndTime(event.target.value)}
-            className="flex-1"
-          />
+          <div className="flex-1">
+            <p className="mb-1.5 text-sm font-medium text-ink-soft">Start</p>
+            <TimePicker value={startTime} onChange={setStartTime} />
+          </div>
+          <div className="flex-1">
+            <p className="mb-1.5 text-sm font-medium text-ink-soft">End</p>
+            <TimePicker value={endTime} onChange={setEndTime} />
+          </div>
         </div>
         <p className="text-xs text-ink-faint">
           Any booked appointment inside this window will automatically move to the nearest open slot.

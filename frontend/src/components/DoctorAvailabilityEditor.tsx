@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import client from '../api/client'
 import { extractErrorMessage } from '../api/errors'
 import { Button } from './ui/Button'
+import { TimePicker } from './ui/TimePicker'
 import { formatTime, WEEKDAYS } from '../lib/format'
 import type { Doctor, DoctorAvailability } from '../types'
 
@@ -84,22 +85,10 @@ function DayPeriods({
         ))}
 
         {isAdding ? (
-          <form onSubmit={addPeriod} className="flex items-center gap-1.5">
-            <input
-              type="time"
-              required
-              value={startTime}
-              onChange={(event) => setStartTime(event.target.value)}
-              className="rounded-lg border border-line-strong bg-white px-2.5 py-1.5 font-mono text-sm tabular focus:border-pine-700 focus:outline-none"
-            />
+          <form onSubmit={addPeriod} className="flex flex-wrap items-center gap-1.5">
+            <TimePicker value={startTime} onChange={setStartTime} />
             <span className="text-ink-faint">to</span>
-            <input
-              type="time"
-              required
-              value={endTime}
-              onChange={(event) => setEndTime(event.target.value)}
-              className="rounded-lg border border-line-strong bg-white px-2.5 py-1.5 font-mono text-sm tabular focus:border-pine-700 focus:outline-none"
-            />
+            <TimePicker value={endTime} onChange={setEndTime} />
             <Button type="submit" size="sm" isLoading={isSaving}>
               Add
             </Button>
