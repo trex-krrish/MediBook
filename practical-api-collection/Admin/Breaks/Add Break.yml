@@ -1,0 +1,128 @@
+info:
+  name: Add Break
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{base_url}}/admin/doctors/1/breaks"
+  body:
+    type: json
+    data: |-
+      {
+        "date": "2026-09-21",
+        "start_time": "12:00",
+        "end_time": "13:00"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Blocks out a one-off window (e.g. a lunch break, a meeting) for a doctor on
+  a specific **date** — unlike availability periods, a break is a single
+  calendar day, not a recurring weekday. Any already-`booked` appointment
+  that falls inside the break window is **automatically moved**, in the same
+  request/transaction, to the nearest slot still open for that doctor:
+
+  1. Same day first, whichever open slot is closest in time to the
+     appointment's original `start_time` (ties broken by the earlier slot).
+  2. If nothing is free that day, the earliest slot on the soonest day after
+     it, searching up to 60 days ahead.
+  3. If truly nothing opens up in that window, the appointment is left
+     untouched and does not appear in `moved_appointments` (this can't
+     currently happen through normal use, since the request itself refuses
+     to save a break unless the doctor has at least one free slot that day —
+     see Error Responses).
+
+  Moved appointments get `status` unchanged (still `booked`), a new
+  `appointment_date`/`start_time`/`end_time`, and `rescheduled_at` stamped —
+  visible afterwards via `Patient / Appointments / List My Appointments`.
+  This is the **only** place `moved_appointments` — or a doctor's breaks at
+  all — appear in a response; no `GET` endpoint currently lists a doctor's
+  breaks back out.
+
+  ---
+
+  ## Path Parameter
+
+  * `{doctor}` — integer ID of the doctor
+
+  ---
+
+  ## date:-
+
+  * Type: string
+  * Required: Yes
+  * Format: `Y-m-d`
+
+  ---
+
+  ## start_time:-
+
+  * Type: string
+  * Required: Yes
+  * Format: `H:i`
+
+  ---
+
+  ## end_time:-
+
+  * Type: string
+  * Required: Yes
+  * Format: `H:i`
+  * Must be after `start_time`
+
+  ---
+
+  ## Response (success — 201):-
+
+  ```json
+  {
+    "data": {
+      "id": 1,
+      "doctor_id": 1,
+      "date": "2026-09-21",
+      "start_time": "12:00",
+      "end_time": "13:00"
+    },
+    "moved_appointments": [
+      {
+        "id": 9,
+        "doctor": { "id": 1, "name": "Dr. Sarah Johnson", "specialization": "Cardiology", "email": "sarah.johnson@example.com", "phone": "1234567890", "is_active": true },
+        "patient": { "id": 2, "name": "Test Patient", "email": "patient@example.com", "role": "patient" },
+        "appointment_date": "2026-09-21",
+        "start_time": "11:30",
+        "end_time": "12:00",
+        "status": "booked",
+        "cancelled_at": null,
+        "rescheduled_at": "2026-09-18T11:00:00+00:00",
+        "created_at": "2026-09-18T10:15:00+00:00"
+      }
+    ]
+  }
+  ```
+
+  `moved_appointments` is `[]` when the break doesn't overlap any booked
+  appointment.
+
+  ---
+
+  ## Error Responses
+
+  * `404` — no doctor with that ID
+  * `422` — `errors.end_time` when it isn't after `start_time`, either field
+    isn't valid, or `errors.date`: "No breaks can be assigned because the
+    doctor has no free slots for that day." when the doctor has zero open
+    slots that day (no availability configured for that weekday, or the day
+    is already fully booked) — this is a safety check so a break can never
+    strand an appointment with nowhere to go on that day without a same-day
+    fallback existing at save time
+
+  ---

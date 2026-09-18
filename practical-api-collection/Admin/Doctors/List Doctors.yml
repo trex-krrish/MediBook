@@ -20,6 +20,13 @@ docs: |
   Returns every doctor (active and inactive), each with its
   `availabilities` already loaded — this is how the admin views "the
   availability of all doctors" in one call, no N+1 follow-up requests needed.
+  A doctor may list several periods for the same `day_of_week` (split
+  schedules are allowed since `Admin / Availability / Add Availability Period`
+  moved to a create-many-periods model).
+
+  `breaks` is **not** included here (not eager-loaded by this endpoint) even
+  though it's a defined field on the resource — see
+  `Admin / Breaks / Add Break` for the only response that returns break data.
 
   ---
 
@@ -54,8 +61,9 @@ docs: |
   ## day_of_week:-
 
   * Integer `0`–`6`, Carbon's convention: `0` = Sunday … `6` = Saturday.
-  * A doctor has at most one row per `day_of_week` — that's the "single
-    availability period a day" rule, enforced in
-    `Admin / Availability / Set Availability`.
+  * A doctor can have multiple rows for the same `day_of_week` — one per
+    non-overlapping period (e.g. a 9–1 and a 2–5 row for the same Monday).
+    Overlap between two periods on the same day is rejected at write time in
+    `Admin / Availability / Add Availability Period`.
 
   ---

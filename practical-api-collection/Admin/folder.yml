@@ -18,4 +18,11 @@ docs:
 
     A valid token belonging to a `patient` account gets `403 Forbidden` from
     every endpoint in this folder; no token at all gets `401 Unauthorized`.
+
+    * `Doctors` — add/update doctors.
+    * `Availability` — add or remove a doctor's recurring weekly periods (a
+      day can now hold several non-overlapping periods, e.g. split
+      morning/afternoon hours).
+    * `Breaks` — block out a one-off date/time window; any booked appointment
+      caught inside it is auto-rescheduled to the nearest open slot.
   type: text/markdown

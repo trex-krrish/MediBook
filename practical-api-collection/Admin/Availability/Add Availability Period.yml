@@ -1,0 +1,96 @@
+info:
+  name: Add Availability Period
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{base_url}}/admin/doctors/1/availabilities"
+  body:
+    type: json
+    data: |-
+      {
+        "day_of_week": 1,
+        "start_time": "09:00",
+        "end_time": "13:00"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Adds one availability period for a doctor. A day can now hold **several**
+  non-overlapping periods (e.g. a split 9–1 / 2–5 schedule) — this replaces
+  the old "one window per day" endpoint. Periods can be exactly back-to-back
+  (one ending where the next starts) but not overlapping; the server checks
+  this on every insert, so there's no client-side overlap logic to get right.
+
+  To give a doctor a split day, call this twice with the same `day_of_week`
+  and two non-overlapping windows. Remove a period with
+  `Availability / Remove Availability Period`.
+
+  ---
+
+  ## Path Parameter
+
+  * `{doctor}` — integer ID of the doctor
+
+  ---
+
+  ## day_of_week:-
+
+  * Type: integer
+  * Required: Yes
+  * Range: `0`–`6` (Carbon convention — `0` = Sunday, `1` = Monday, …
+    `6` = Saturday)
+
+  ---
+
+  ## start_time:-
+
+  * Type: string
+  * Required: Yes
+  * Format: `H:i`, e.g. `09:00`
+
+  ---
+
+  ## end_time:-
+
+  * Type: string
+  * Required: Yes
+  * Format: `H:i`, e.g. `13:00`
+  * Must be after `start_time`
+
+  ---
+
+  ## Response (success — 201):-
+
+  ```json
+  {
+    "data": {
+      "id": 2,
+      "doctor_id": 1,
+      "day_of_week": 1,
+      "start_time": "09:00",
+      "end_time": "13:00"
+    }
+  }
+  ```
+
+  ---
+
+  ## Error Responses
+
+  * `404` — no doctor with that ID
+  * `422` — `errors.end_time` when it isn't after `start_time`, either field
+    isn't valid `H:i`, or `errors.start_time`: "This period overlaps an
+    existing availability window for that day." when it collides with a
+    period already saved for the same `day_of_week`
+
+  ---

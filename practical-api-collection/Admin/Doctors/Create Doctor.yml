@@ -27,9 +27,9 @@ docs: |
   ## Overview
 
   Adds a new doctor. A freshly created doctor has no `availabilities` yet —
-  set them with `Admin / Availability / Set Availability` before patients can
-  book against it (`Patient / Doctors / Available Slots` returns an empty
-  list until then).
+  add periods with `Admin / Availability / Add Availability Period` before
+  patients can book against it (`Patient / Doctors / Available Slots` returns
+  an empty list until then).
 
   ---
 
@@ -78,11 +78,15 @@ docs: |
       "specialization": "Cardiology",
       "email": "sarah.johnson@example.com",
       "phone": "1234567890",
-      "is_active": true,
-      "availabilities": []
+      "is_active": true
     }
   }
   ```
+
+  The `availabilities` and `breaks` fields are omitted here, not returned as
+  `[]` — this endpoint doesn't eager-load either relation on the model it
+  just created. They only appear on responses that explicitly load them (see
+  `Doctors / List Doctors` and `Doctors / Show Doctor`).
 
   ---
 

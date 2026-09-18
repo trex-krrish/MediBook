@@ -21,16 +21,19 @@ settings:
 docs: |
   ## Overview
 
-  Returns the doctor's actually-bookable slots for one calendar date: the
-  matching weekday's `start_time`–`end_time` window from
-  `doctor_availabilities`, cut into `slot_duration_minutes` chunks (default
-  30, `config('appointments.slot_duration_minutes')`), with already-`booked`
-  slots and any slot already in the past removed. This is the only endpoint
-  that should drive the patient's slot picker — never compute slots
-  client-side.
+  Returns the doctor's actually-bookable slots for one calendar date: every
+  matching weekday's `start_time`–`end_time` window(s) from
+  `doctor_availabilities` — a day can have more than one, e.g. split
+  morning/afternoon hours — cut into `slot_duration_minutes` chunks (default
+  30, `config('appointments.slot_duration_minutes')`), with anything that
+  falls inside one of the doctor's `doctor_breaks` for that date, any
+  already-`booked` slot, and any slot already in the past removed. This is
+  the only endpoint that should drive the patient's slot picker — never
+  compute slots client-side.
 
   A cancelled appointment's slot reappears here immediately, since only
-  `status = booked` rows are excluded.
+  `status = booked` rows are excluded. Likewise, a slot an admin's break just
+  bumped an appointment out of opens up here the moment the break is saved.
 
   ---
 
@@ -62,8 +65,9 @@ docs: |
   }
   ```
 
-  An empty `slots` array means either the doctor has no availability set for
-  that weekday, or every slot in the window is already booked / in the past.
+  An empty `slots` array means the doctor has no availability set for that
+  weekday, every slot is already booked / in the past, or a break covers the
+  whole remaining window.
 
   ---
 

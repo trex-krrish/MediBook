@@ -1,0 +1,46 @@
+info:
+  name: Remove Availability Period
+  type: http
+  seq: 2
+
+http:
+  method: DELETE
+  url: "{{base_url}}/admin/doctors/1/availabilities/2"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Deletes a single availability period. No request body. This does not touch
+  any appointments already booked inside that window — unlike
+  `Admin / Breaks / Add Break`, removing a whole period is not automatically
+  rescheduled around, so remove periods before they'd orphan an existing
+  booking, or handle those appointments manually first.
+
+  ---
+
+  ## Path Parameters
+
+  * `{doctor}` — integer ID of the doctor
+  * `{availability}` — integer ID of the availability period to remove (from
+    `Add Availability Period`'s response, or
+    `Admin / Doctors / List Doctors`' `availabilities` array)
+
+  ---
+
+  ## Response (success — 204 No Content)
+
+  ---
+
+  ## Error Responses
+
+  * `404` — no doctor with that ID, no availability period with that ID, or
+    the availability period belongs to a different doctor than `{doctor}`
+
+  ---

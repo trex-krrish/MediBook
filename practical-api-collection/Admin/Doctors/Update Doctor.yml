@@ -97,6 +97,9 @@ docs: |
   }
   ```
 
+  `breaks` is omitted here (not eager-loaded by this endpoint) — see
+  `Admin / Breaks / Add Break` for the only response that returns break data.
+
   ---
 
   ## Error Responses
