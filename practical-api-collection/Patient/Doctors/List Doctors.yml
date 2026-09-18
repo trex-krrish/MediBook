@@ -1,0 +1,45 @@
+info:
+  name: List Doctors
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{base_url}}/doctors"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Returns only **active** doctors (`is_active: true`), sorted by name, without
+  their `availabilities` — this is the browse list. Use
+  `Doctors / Show Doctor` for one doctor's full availability, or
+  `Doctors / Available Slots` for actual bookable times on a given date.
+
+  ---
+
+  ## Response (success — 200):-
+
+  ```json
+  {
+    "data": [
+      {
+        "id": 1,
+        "name": "Dr. Sarah Johnson",
+        "specialization": "Cardiology",
+        "email": "sarah.johnson@example.com",
+        "phone": "1234567890",
+        "is_active": true,
+        "availabilities": []
+      }
+    ]
+  }
+  ```
+
+  ---

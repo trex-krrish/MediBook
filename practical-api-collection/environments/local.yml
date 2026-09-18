@@ -1,0 +1,16 @@
+name: local
+variables:
+  - name: base_url
+    value: http://127.0.0.1:8000/api
+  - name: admin_email
+    value: admin@example.com
+  - name: admin_password
+    value: password
+  - name: admin_token
+    value: ""
+  - name: patient_email
+    value: patient@example.com
+  - name: patient_password
+    value: password
+  - name: patient_token
+    value: ""

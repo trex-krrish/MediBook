@@ -1,0 +1,61 @@
+info:
+  name: List Doctors
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{base_url}}/admin/doctors"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Returns every doctor (active and inactive), each with its
+  `availabilities` already loaded — this is how the admin views "the
+  availability of all doctors" in one call, no N+1 follow-up requests needed.
+
+  ---
+
+  ## Response (success — 200):-
+
+  ```json
+  {
+    "data": [
+      {
+        "id": 1,
+        "name": "Dr. Sarah Johnson",
+        "specialization": "Cardiology",
+        "email": "sarah.johnson@example.com",
+        "phone": "1234567890",
+        "is_active": true,
+        "availabilities": [
+          {
+            "id": 1,
+            "doctor_id": 1,
+            "day_of_week": 1,
+            "start_time": "09:00",
+            "end_time": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+  ---
+
+  ## day_of_week:-
+
+  * Integer `0`–`6`, Carbon's convention: `0` = Sunday … `6` = Saturday.
+  * A doctor has at most one row per `day_of_week` — that's the "single
+    availability period a day" rule, enforced in
+    `Admin / Availability / Set Availability`.
+
+  ---

@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class DoctorResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'specialization' => $this->specialization,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'is_active' => $this->is_active,
+            'availabilities' => DoctorAvailabilityResource::collection($this->whenLoaded('availabilities')),
+            'breaks' => DoctorBreakResource::collection($this->whenLoaded('breaks')),
+        ];
+    }
+}

@@ -1,0 +1,23 @@
+info:
+  name: Auth
+  type: folder
+  seq: 1
+
+request: {}
+
+docs:
+  content: |
+    ## Overview
+
+    Shared authentication — one `users` table backs both portals, split only by
+    the `role` column (`admin` | `patient`).
+
+    * `Register` and the two `Login` requests are public.
+    * `Me` and `Logout` require a bearer token but aren't role-gated — either
+      an `admin_token` or `patient_token` works.
+    * There is no admin self-registration endpoint. The only admin account in
+      this project is the one `DatabaseSeeder` creates
+      (`admin@example.com` / `password`); `Login (Admin)` is pre-filled with it.
+    * Auth is pure Sanctum personal-access-token bearer auth — no cookies, no
+      CSRF step needed before these requests.
+  type: text/markdown

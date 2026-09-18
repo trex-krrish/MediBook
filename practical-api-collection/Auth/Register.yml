@@ -1,0 +1,98 @@
+info:
+  name: Register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{base_url}}/register"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Jane Doe",
+        "email": "jane@example.com",
+        "password": "password123"
+      }
+
+vars:
+  res:
+    - name: patient_token
+      expr: res.body.token
+
+script:
+  res: |
+    var token = res.body && res.body.token;
+    if (token) {
+      bru.setEnvVar("patient_token", token);
+    }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Creates a patient account and returns a Sanctum bearer token in the same
+  call — no separate login needed right after registering.
+
+  Any `role` sent in the body is ignored: every account created here always
+  gets `role: "patient"`. There is no admin-registration endpoint; see the
+  `Auth` folder overview.
+
+  This request auto-saves the returned token into the `patient_token`
+  environment variable, so anything under `Patient` works immediately after.
+
+  ---
+
+  ## name:-
+
+  * Type: string
+  * Required: Yes
+  * Max length: 255 characters
+
+  ---
+
+  ## email:-
+
+  * Type: string
+  * Required: Yes
+  * Format: valid email address
+  * Max length: 255 characters
+  * Constraint: must be unique across `users`
+
+  ---
+
+  ## password:-
+
+  * Type: string
+  * Required: Yes
+  * Min length: 8 characters
+
+  ---
+
+  ## Response (success — 201):-
+
+  ```json
+  {
+    "user": {
+      "id": 5,
+      "name": "Jane Doe",
+      "email": "jane@example.com",
+      "role": "patient"
+    },
+    "token": "3|plainTextTokenExample"
+  }
+  ```
+
+  ---
+
+  ## Error Responses
+
+  * `422` — validation failure: `errors.email` (already taken) or
+    `errors.password` (shorter than 8 characters)
+
+  ---

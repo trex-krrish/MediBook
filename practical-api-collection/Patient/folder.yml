@@ -1,0 +1,32 @@
+info:
+  name: Patient
+  type: folder
+  seq: 3
+
+request:
+  auth:
+    type: bearer
+    token: "{{patient_token}}"
+
+docs:
+  content: |
+    ## Overview
+
+    Everything here sits behind `role:patient` middleware. Run
+    `Auth / Login (Patient)` (or `Register`) first — it populates
+    `{{patient_token}}`, which this folder sends as the bearer token on every
+    request below by default.
+
+    A valid token belonging to an `admin` account gets `403 Forbidden` from
+    every endpoint in this folder; no token at all gets `401 Unauthorized`.
+
+    ## Suggested flow
+
+    1. `Doctors / List Doctors` → pick a doctor ID.
+    2. `Doctors / Available Slots` for that doctor and a date → pick a
+       `start_time` from the returned `slots`.
+    3. `Appointments / Book Appointment` with that doctor, date and
+       `start_time`.
+    4. `Appointments / List My Appointments` to see it, or
+       `Appointments / Cancel Appointment` to free the slot back up.
+  type: text/markdown

@@ -1,0 +1,68 @@
+info:
+  name: Cancel Appointment
+  type: http
+  seq: 3
+
+http:
+  method: DELETE
+  url: "{{base_url}}/appointments/1"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Cancels the patient's own appointment — sets `status` to `cancelled` and
+  stamps `cancelled_at`; the row is kept, not deleted. Once cancelled, that
+  exact `start_time` reopens immediately in
+  `Doctors / Available Slots`, since the slot query only excludes
+  `status = booked` rows.
+
+  ---
+
+  ## Path Parameter
+
+  * `{appointment}` — integer ID of the appointment to cancel
+
+  ---
+
+  ## Response (success — 200):-
+
+  ```json
+  {
+    "data": {
+      "id": 7,
+      "doctor": {
+        "id": 1,
+        "name": "Dr. Sarah Johnson",
+        "specialization": "Cardiology",
+        "email": "sarah.johnson@example.com",
+        "phone": "1234567890",
+        "is_active": true,
+        "availabilities": []
+      },
+      "patient": [],
+      "appointment_date": "2026-09-21",
+      "start_time": "09:00",
+      "end_time": "09:30",
+      "status": "cancelled",
+      "cancelled_at": "2026-09-18T11:00:00+00:00",
+      "created_at": "2026-09-18T10:15:00+00:00"
+    }
+  }
+  ```
+
+  ---
+
+  ## Error Responses
+
+  * `403` — this appointment belongs to a different patient
+  * `422` — "This appointment is already cancelled." — it was already
+    cancelled
+
+  ---

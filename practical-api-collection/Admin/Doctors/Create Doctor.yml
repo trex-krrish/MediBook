@@ -1,0 +1,94 @@
+info:
+  name: Create Doctor
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{base_url}}/admin/doctors"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Dr. Sarah Johnson",
+        "specialization": "Cardiology",
+        "email": "sarah.johnson@example.com",
+        "phone": "1234567890"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Adds a new doctor. A freshly created doctor has no `availabilities` yet —
+  set them with `Admin / Availability / Set Availability` before patients can
+  book against it (`Patient / Doctors / Available Slots` returns an empty
+  list until then).
+
+  ---
+
+  ## name:-
+
+  * Type: string
+  * Required: Yes
+  * Max length: 255 characters
+
+  ---
+
+  ## specialization:-
+
+  * Type: string
+  * Required: Yes
+  * Max length: 255 characters
+
+  ---
+
+  ## email:-
+
+  * Type: string
+  * Required: No
+  * Nullable: Yes
+  * Format: valid email address
+  * Constraint: must be unique across `doctors` when present
+
+  ---
+
+  ## phone:-
+
+  * Type: string
+  * Required: No
+  * Nullable: Yes
+  * Max length: 32 characters
+
+  ---
+
+  ## Response (success — 201):-
+
+  ```json
+  {
+    "data": {
+      "id": 4,
+      "name": "Dr. Sarah Johnson",
+      "specialization": "Cardiology",
+      "email": "sarah.johnson@example.com",
+      "phone": "1234567890",
+      "is_active": true,
+      "availabilities": []
+    }
+  }
+  ```
+
+  ---
+
+  ## Error Responses
+
+  * `422` — validation failure, e.g. `errors.email` when already taken by
+    another doctor
+
+  ---

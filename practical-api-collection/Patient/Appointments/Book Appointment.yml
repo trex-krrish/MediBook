@@ -1,0 +1,99 @@
+info:
+  name: Book Appointment
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{base_url}}/appointments"
+  body:
+    type: json
+    data: |-
+      {
+        "doctor_id": 1,
+        "appointment_date": "2026-09-21",
+        "start_time": "09:00"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Books a slot for the logged-in patient. `start_time` must exactly match one
+  of the `start_time` values currently returned by
+  `Doctors / Available Slots` for that doctor and date — the server
+  re-validates the slot itself (it doesn't trust the client), and re-checks
+  for a race under a row lock at insert time, so two patients can't win the
+  same slot.
+
+  ---
+
+  ## doctor_id:-
+
+  * Type: integer
+  * Required: Yes
+  * Must reference an existing doctor
+
+  ---
+
+  ## appointment_date:-
+
+  * Type: string
+  * Required: Yes
+  * Format: `Y-m-d`
+  * Must be today or later
+
+  ---
+
+  ## start_time:-
+
+  * Type: string
+  * Required: Yes
+  * Format: `H:i`
+  * Must be one of the doctor's currently open slots for that date
+
+  ---
+
+  ## Response (success — 201):-
+
+  ```json
+  {
+    "data": {
+      "id": 7,
+      "doctor": {
+        "id": 1,
+        "name": "Dr. Sarah Johnson",
+        "specialization": "Cardiology",
+        "email": "sarah.johnson@example.com",
+        "phone": "1234567890",
+        "is_active": true,
+        "availabilities": []
+      },
+      "patient": [],
+      "appointment_date": "2026-09-21",
+      "start_time": "09:00",
+      "end_time": "09:30",
+      "status": "booked",
+      "cancelled_at": null,
+      "created_at": "2026-09-18T10:15:00+00:00"
+    }
+  }
+  ```
+
+  ---
+
+  ## Error Responses
+
+  * `422` — validation failure, or "The selected time slot is not available."
+    when `start_time` isn't in the doctor's current open slots (outside their
+    availability window, in the past, or already booked)
+  * `409` — "This slot has just been booked by someone else." — lost a race
+    with another patient between fetching slots and booking
+
+  ---

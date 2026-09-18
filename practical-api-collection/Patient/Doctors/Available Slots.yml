@@ -1,0 +1,76 @@
+info:
+  name: Available Slots
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{base_url}}/doctors/1/slots?date=2026-09-21"
+  params:
+    - name: date
+      value: "2026-09-21"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Returns the doctor's actually-bookable slots for one calendar date: the
+  matching weekday's `start_time`–`end_time` window from
+  `doctor_availabilities`, cut into `slot_duration_minutes` chunks (default
+  30, `config('appointments.slot_duration_minutes')`), with already-`booked`
+  slots and any slot already in the past removed. This is the only endpoint
+  that should drive the patient's slot picker — never compute slots
+  client-side.
+
+  A cancelled appointment's slot reappears here immediately, since only
+  `status = booked` rows are excluded.
+
+  ---
+
+  ## Path Parameter
+
+  * `{doctor}` — integer ID of the doctor
+
+  ---
+
+  ## date:-
+
+  * Type: string
+  * Required: Yes
+  * Format: `Y-m-d`
+  * Must be today or later, and no more than
+    `APPOINTMENT_BOOKING_WINDOW_DAYS` (default 14) days out
+
+  ---
+
+  ## Response (success — 200):-
+
+  ```json
+  {
+    "date": "2026-09-21",
+    "slots": [
+      { "start_time": "09:00", "end_time": "09:30" },
+      { "start_time": "09:30", "end_time": "10:00" }
+    ]
+  }
+  ```
+
+  An empty `slots` array means either the doctor has no availability set for
+  that weekday, or every slot in the window is already booked / in the past.
+
+  ---
+
+  ## Error Responses
+
+  * `404` — no doctor with that ID
+  * `422` — `date` missing, wrongly formatted, in the past, or beyond the
+    booking window
+
+  ---

@@ -1,0 +1,107 @@
+info:
+  name: Update Doctor
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{base_url}}/admin/doctors/1"
+  body:
+    type: json
+    data: |-
+      {
+        "is_active": false
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Partially updates a doctor — every field is optional (`sometimes`), so send
+  only what's changing. Commonly used to flip `is_active` to take a doctor
+  out of the patient-facing list without deleting their history.
+
+  ---
+
+  ## Path Parameter
+
+  * `{doctor}` — integer ID of the doctor to update
+
+  ---
+
+  ## name:-
+
+  * Type: string
+  * Required: No
+  * Max length: 255 characters
+
+  ---
+
+  ## specialization:-
+
+  * Type: string
+  * Required: No
+  * Max length: 255 characters
+
+  ---
+
+  ## email:-
+
+  * Type: string
+  * Required: No
+  * Nullable: Yes
+  * Format: valid email address
+  * Constraint: must be unique across `doctors` (ignores this doctor's own
+    current row)
+
+  ---
+
+  ## phone:-
+
+  * Type: string
+  * Required: No
+  * Nullable: Yes
+  * Max length: 32 characters
+
+  ---
+
+  ## is_active:-
+
+  * Type: boolean
+  * Required: No
+  * Setting this to `false` removes the doctor from
+    `Patient / Doctors / List Doctors` (which only shows active doctors) —
+    it does not touch existing appointments.
+
+  ---
+
+  ## Response (success — 200):-
+
+  ```json
+  {
+    "data": {
+      "id": 1,
+      "name": "Dr. Sarah Johnson",
+      "specialization": "Cardiology",
+      "email": "sarah.johnson@example.com",
+      "phone": "1234567890",
+      "is_active": false,
+      "availabilities": []
+    }
+  }
+  ```
+
+  ---
+
+  ## Error Responses
+
+  * `404` — no doctor with that ID
+  * `422` — validation failure
+
+  ---

@@ -1,0 +1,84 @@
+info:
+  name: Login (Patient)
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{base_url}}/login"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{patient_email}}",
+        "password": "{{patient_password}}"
+      }
+
+vars:
+  res:
+    - name: patient_token
+      expr: res.body.token
+
+script:
+  res: |
+    var token = res.body && res.body.token;
+    if (token) {
+      bru.setEnvVar("patient_token", token);
+    }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Authenticates by email and password and returns a Sanctum bearer token.
+  One endpoint serves both portals — the account's `role` decides what it can
+  call afterwards, the request itself is identical.
+
+  Pre-filled with the seeded patient (`{{patient_email}}` / `{{patient_password}}`,
+  created by `DatabaseSeeder`). Auto-saves the returned token into
+  `patient_token`. Use `Login (Admin)` for the admin session.
+
+  ---
+
+  ## email:-
+
+  * Type: string
+  * Required: Yes
+
+  ---
+
+  ## password:-
+
+  * Type: string
+  * Required: Yes
+
+  ---
+
+  ## Response (success — 200):-
+
+  ```json
+  {
+    "user": {
+      "id": 2,
+      "name": "Test Patient",
+      "email": "patient@example.com",
+      "role": "patient"
+    },
+    "token": "5|plainTextTokenExample"
+  }
+  ```
+
+  ---
+
+  ## Error Responses
+
+  * `422` — `errors.email: ["These credentials do not match our records."]`
+    for any wrong email/password combination (same message either way, so the
+    response never reveals whether the account exists)
+
+  ---

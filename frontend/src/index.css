@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-paper: #f4f6f1;
+  --color-paper-dim: #eceee7;
+  --color-ink: #16241f;
+  --color-ink-soft: #4c5c54;
+  --color-ink-faint: #8a978f;
+  --color-line: #dde3da;
+  --color-line-strong: #c7d0c3;
+
+  --color-pine-950: #0a2620;
+  --color-pine-900: #0e332a;
+  --color-pine-800: #0e5c4a;
+  --color-pine-700: #12735d;
+  --color-pine-600: #178a70;
+  --color-pine-100: #dcece5;
+  --color-pine-50: #eef5f1;
+
+  --color-amber-700: #a4711f;
+  --color-amber-600: #c98d2f;
+  --color-amber-500: #dda545;
+  --color-amber-100: #f3e3c6;
+  --color-amber-50: #faf1df;
+
+  --color-brick-700: #8f3a24;
+  --color-brick-600: #b0442b;
+  --color-brick-100: #f5ddd3;
+  --color-brick-50: #faece6;
+}
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background-color: var(--color-amber-100);
+  color: var(--color-pine-950);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-pine-700);
+  outline-offset: 2px;
+}
+
+/* Slim, quiet scrollbar for the horizontal date strip */
+.scrollbar-slim::-webkit-scrollbar {
+  height: 6px;
+}
+.scrollbar-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-slim::-webkit-scrollbar-thumb {
+  background-color: var(--color-line-strong);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Ticket-stub card used for appointments: a torn-perforation seam between
+   the date stub and the appointment details, echoing a physical clinic slip. */
+.ticket {
+  position: relative;
+  display: flex;
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ticket-seam {
+  position: relative;
+  flex-shrink: 0;
+  border-right: 1.5px dashed var(--color-line-strong);
+}
+
+.ticket-seam::before,
+.ticket-seam::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+}
+
+.ticket-seam::before {
+  top: -9px;
+}
+
+.ticket-seam::after {
+  bottom: -9px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+[data-sonner-toaster] {
+  --normal-bg: white;
+  --normal-border: var(--color-line);
+  --normal-text: var(--color-ink);
+  --success-bg: var(--color-pine-50);
+  --success-border: var(--color-pine-100);
+  --success-text: var(--color-pine-950);
+  --error-bg: var(--color-brick-50);
+  --error-border: var(--color-brick-100);
+  --error-text: var(--color-brick-700);
+  font-family: var(--font-sans);
+}
+
+[data-sonner-toast] {
+  border-radius: 12px !important;
+}

@@ -1,0 +1,80 @@
+info:
+  name: Login (Admin)
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{base_url}}/login"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{admin_email}}",
+        "password": "{{admin_password}}"
+      }
+
+vars:
+  res:
+    - name: admin_token
+      expr: res.body.token
+
+script:
+  res: |
+    var token = res.body && res.body.token;
+    if (token) {
+      bru.setEnvVar("admin_token", token);
+    }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Same `/login` endpoint as `Login (Patient)`, pre-filled with the seeded
+  admin account (`{{admin_email}}` / `{{admin_password}}`, created by
+  `DatabaseSeeder`). Auto-saves the returned token into `admin_token`, which
+  the whole `Admin` folder is set up to use.
+
+  ---
+
+  ## email:-
+
+  * Type: string
+  * Required: Yes
+
+  ---
+
+  ## password:-
+
+  * Type: string
+  * Required: Yes
+
+  ---
+
+  ## Response (success — 200):-
+
+  ```json
+  {
+    "user": {
+      "id": 1,
+      "name": "Admin",
+      "email": "admin@example.com",
+      "role": "admin"
+    },
+    "token": "1|plainTextTokenExample"
+  }
+  ```
+
+  ---
+
+  ## Error Responses
+
+  * `422` — `errors.email: ["These credentials do not match our records."]`
+    for any wrong email/password combination
+
+  ---

@@ -1,0 +1,36 @@
+info:
+  name: Logout
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{base_url}}/logout"
+  auth:
+    type: bearer
+    token: "{{patient_token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  ## Overview
+
+  Revokes the Sanctum token used on this request. No request body. Not
+  role-gated — point the Authorization header at `{{admin_token}}` to log the
+  admin session out instead.
+
+  Returns `204 No Content` on success. Re-run `Login (Patient)` /
+  `Login (Admin)` afterwards to get a fresh token, since the old one is
+  deleted server-side.
+
+  ---
+
+  ## Error Responses
+
+  * `401` — missing or invalid bearer token
+
+  ---

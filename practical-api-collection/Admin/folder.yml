@@ -1,0 +1,21 @@
+info:
+  name: Admin
+  type: folder
+  seq: 2
+
+request:
+  auth:
+    type: bearer
+    token: "{{admin_token}}"
+
+docs:
+  content: |
+    ## Overview
+
+    Everything here sits behind `role:admin` middleware. Run
+    `Auth / Login (Admin)` first — it populates `{{admin_token}}`, which this
+    folder sends as the bearer token on every request below by default.
+
+    A valid token belonging to a `patient` account gets `403 Forbidden` from
+    every endpoint in this folder; no token at all gets `401 Unauthorized`.
+  type: text/markdown
